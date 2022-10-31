@@ -8,7 +8,6 @@ Create a file named setup.py
 >`from distutils.core import setup, Extension`
 >`from Cython.Build import cythonize`
 >`exts = (cythonize("*File_name*.pyx"))`
-
 >`setup(ext_modules = exts)`
 
 Compile it into a Shared Object (SO)
