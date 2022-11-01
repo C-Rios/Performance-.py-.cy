@@ -1,3 +1,10 @@
+"""
+Date: Nov 01/2022
+Author: Juan Camilo De Los Ríos
+Topic: Cython - Python comparison
+Subject: Planets - gravitational orbit
+"""
+
 from math import sqrt
 
 class Planet(object):
