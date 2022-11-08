@@ -9,10 +9,11 @@ from ast import iter_fields
 import Planeta_orbita_cy
 import Planeta_orbita_py
 import time
+import numpy as np
 
 #Params
-steps=2000000
-time_frame = 400
+steps= np.arange(1000000,100000000,1000000, dtype=int)
+time_frame = np.arange(100,10000,100, dtype=int)
 
 planet_cy = Planeta_orbita_cy.Planet()
 #Earth data
@@ -37,7 +38,7 @@ planet_py.m = 5.9742*10**24
 
 #Experimentation area
 #Gaussian noice reduction
-print_format = "{},{:.5f},{:.5f},\n"
+print_format = "{},{},{:.5f},{:.5f}\n"
 
 #Clears csv
 f = open("planeta.csv","w")
@@ -45,26 +46,49 @@ f.truncate()
 f.close()
 
 with open("planeta.csv","a") as archivo:
-    archivo.write("Iteration, python, cython,\n")
+    archivo.write("steps, time_frame, python, cython\n")
 
-iter = 10
+for i in range (len(steps)):
+    step = steps[i]
+    time_frame_i = time_frame[i]
 
-for i in range(iter):
     init_time=time.time()
-    Planeta_orbita_py.step_time(planet_py, time_frame, steps)
+    Planeta_orbita_py.step_time(planet_py, time_frame_i, step)
     end_time=time.time()
 
     time_python = end_time - init_time
 
     init_time=time.time()
-    Planeta_orbita_cy.step_time(planet_cy, time_frame, steps)
+    Planeta_orbita_cy.step_time(planet_cy, time_frame_i, step)
     end_time=time.time()
 
     time_cython = end_time - init_time
 
     with open("planeta.csv","a") as archivo:
-        archivo.write(print_format.format(i, time_python,time_cython))
+        archivo.write(print_format.format(step,time_frame_i, time_python,time_cython))
 
+"""
+# Performance-.py-.cy
+
+## SHARED OBJECT COMPILATION
+
+### Create a file named setup.py
+
+*from os import lseek*
+
+*from distutils.core import setup, Extension*
+
+*from Cython.Build import cythonize*
+
+*exts = (cythonize("*File_name*.pyx"))*
+
+*setup(ext_modules = exts)*
+
+### Compile it into a Shared Object (SO)
+
+`python3 setup.py build_ext --inplace`
+
+"""
 
 #print("Tiempo de ejecucion con python: {}s\nTiempo de ejecucion con cython: {}s".format(time_python, time_cython))
 #print("Cython es {} veces más rápido que python ".format(round(time_python/time_cython, 2)))
